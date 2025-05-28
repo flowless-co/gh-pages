@@ -18,18 +18,23 @@ jobs:
       - name: Install JupyterLite dependencies
         run: |
           python -m pip install -r requirements.txt
-        working-directory: ./jupyterlite
+        working-directory: ./jupyter-lite
 
       - name: Build the JupyterLite site
         run: |
           cp README.md content
-          jupyter lite build --contents content --output-dir dist
-        working-directory: ./jupyterlite
+          jupyter lite build --contents content --output-dir dist --base-url /jupyter-lite/
+        working-directory: ./jupyter-lite
+
+      - name: Prepare built site for subdirectory deployment
+        run: |
+          mkdir -p temp_pages_output/jupyter-lite
+          mv ./jupyter-lite/dist/* temp_pages_output/jupyter-lite/
 
       - name: Upload artifact for GitHub Pages
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ./jupyterlite/dist
+          path: ./temp_pages_output
 
   deploy:
     needs: build
